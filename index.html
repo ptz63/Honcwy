@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Speaking Practice A1 - Ms. Hạnh X Gemini</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-30">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-sky-500/20">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-white leading-tight">ENGLISH SPEAKING A1</h1>
+                    <p class="text-xs text-sky-400 font-medium">Luyện Phản Xạ Nói - Chuẩn Giọng Nam Anh-Mỹ</p>
+                </div>
+            </div>
+
+            <!-- Controls: Lesson & History -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <select id="lessonSelect" onchange="changeLesson(this.value)" class="bg-slate-700 text-white text-sm font-semibold rounded-lg px-3 py-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer">
+                    <option value="1">Lesson 1: Personal Info</option>
+                    <option value="2">Lesson 2: School & House</option>
+                    <option value="3">Lesson 3: Family & Vehicle</option>
+                    <option value="4">Lesson 4: Daily Routine & Jobs</option>
+                    <option value="5">Lesson 5: Seasons & Clothes</option>
+                    <option value="random">🔀 Nút Random (Tất cả)</option>
+                </select>
+
+                <button onclick="toggleHistoryModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-600 flex items-center space-x-2 transition">
+                    <i class="fa-solid fa-clock-rotate-left text-sky-400"></i>
+                    <span class="hidden sm:inline">Lịch Sử</span>
+                    <span id="historyBadge" class="bg-sky-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-3xl mx-auto w-full px-4 py-6 flex-grow flex flex-col justify-center">
+
+        <!-- Question Box Card -->
+        <div class="bg-slate-800/90 rounded-2xl border border-slate-700 p-6 sm:p-8 card-shadow space-y-6">
+            
+            <!-- Top Bar: Question Counter & Speed Controls -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-700/80 pb-4">
+                <!-- Large Question Counter -->
+                <div class="text-center sm:text-left">
+                    <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Đang học: <span id="currentLessonTitle">Lesson 1</span></span>
+                    <div id="questionCounter" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                        CÂU HỎI SỐ <span class="text-sky-400" id="currentNumberDisplay">1</span> / <span id="totalQuestionsDisplay">12</span>
+                    </div>
+                </div>
+
+                <!-- Speed Control Buttons -->
+                <div class="flex items-center space-x-1.5 bg-slate-900/80 p-1.5 rounded-xl border border-slate-700">
+                    <span class="text-xs text-slate-400 font-semibold px-2"><i class="fa-solid fa-gauge-high mr-1"></i> Tốc độ:</span>
+                    <button onclick="setSpeed(1.0)" id="speed10" class="speed-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-500 text-white">1x</button>
+                    <button onclick="setSpeed(0.75)" id="speed075" class="speed-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white">0.75x</button>
+                    <button onclick="setSpeed(0.5)" id="speed05" class="speed-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white">0.5x</button>
+                    <button onclick="setSpeed(0.25)" id="speed025" class="speed-btn px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white">0.25x</button>
+                </div>
+            </div>
+
+            <!-- Audio Player Section -->
+            <div class="bg-slate-900/60 rounded-xl p-5 border border-slate-700/50 flex flex-col items-center justify-center space-y-3">
+                <div class="flex items-center justify-center space-x-4">
+                    <button id="playAudioBtn" onclick="speakCurrentQuestion()" class="w-16 h-16 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-lg shadow-sky-500/30 flex items-center justify-center text-2xl transition transform active:scale-95 focus:outline-none">
+                        <i id="playIcon" class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400 flex items-center font-medium">
+                    <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> Giọng đọc: US Natural Male Speaker (Anh - Mỹ)
+                </p>
+            </div>
+
+            <!-- Hint Section (Gợi Ý) -->
+            <div class="space-y-3">
+                <button onclick="toggleHint()" class="w-full bg-slate-700/60 hover:bg-slate-700 text-amber-300 font-semibold py-2.5 px-4 rounded-xl border border-amber-500/30 flex items-center justify-center space-x-2 transition">
+                    <i class="fa-solid fa-lightbulb text-amber-400"></i>
+                    <span id="hintBtnText">Nút Gợi Ý (Xem câu hỏi & Đáp án mẫu)</span>
+                </button>
+
+                <!-- Hidden Hint Content -->
+                <div id="hintBox" class="hidden bg-slate-900/90 border border-amber-500/40 rounded-xl p-4 space-y-3 animate-fade-in">
+                    <div>
+                        <span class="text-xs font-bold uppercase text-amber-400 tracking-wider">Nội dung câu hỏi:</span>
+                        <p id="questionTextDisplay" class="text-lg font-semibold text-white mt-0.5">...</p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-2">
+                        <span class="text-xs font-bold uppercase text-emerald-400 tracking-wider">Gợi ý trả lời mẫu (A1):</span>
+                        <p id="sampleAnswerDisplay" class="text-base text-emerald-300 font-medium mt-0.5">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Type Answer & Submit Section -->
+            <div class="space-y-3 pt-2">
+                <label class="block text-xs font-bold uppercase text-slate-300 tracking-wider">
+                    <i class="fa-solid fa-keyboard text-sky-400 mr-1"></i> Type your answer (Gõ câu trả lời của bạn):
+                </label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="userAnswerInput" placeholder="Ví dụ: My name is Nam..." 
+                        onkeydown="if(event.key === 'Enter') submitAnswer()"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 font-medium">
+                    <button onclick="submitAnswer()" id="submitBtn" class="bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-bold px-6 py-3 rounded-xl transition flex items-center justify-center space-x-2 shrink-0">
+                        <span>Submit</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+
+                <!-- AI Feedback Display Box -->
+                <div id="feedbackResultBox" class="hidden rounded-xl p-4 border space-y-2 animate-fade-in">
+                    <div id="feedbackHeader" class="font-bold text-base flex items-center">
+                        <!-- Heading via JS -->
+                    </div>
+                    <div id="feedbackBody" class="text-sm space-y-1">
+                        <!-- Details via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memorization Action Buttons (Ôn lại sau / Đã nhớ) -->
+            <div class="pt-4 border-t border-slate-700/80 flex flex-col sm:flex-row gap-3">
+                <button onclick="markReviewLater()" class="flex-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center space-x-2 active:scale-95">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Ôn lại sau</span>
+                    <span class="text-xs font-normal opacity-80">(Hỏi lại sau 2-3 câu)</span>
+                </button>
+
+                <button onclick="markMastered()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-600/20 transition flex items-center justify-center space-x-2 active:scale-95">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Đã nhớ</span>
+                    <span class="text-xs font-normal opacity-90">(Hoàn thành câu này)</span>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-book-bookmark text-sky-400 text-xl"></i>
+                    <h2 class="text-lg font-bold text-white">Lịch Sử Học Tập</h2>
+                </div>
+                <button onclick="toggleHistoryModal()" class="text-slate-400 hover:text-white p-2 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content (Tabs + Items) -->
+            <div class="p-6 overflow-y-auto flex-grow space-y-4">
+                <div class="flex space-x-2 border-b border-slate-700 pb-2">
+                    <button onclick="filterHistory('all')" id="tabAll" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-sky-500 text-white">Tất cả (<span id="countAll">0</span>)</button>
+                    <button onclick="filterHistory('mastered')" id="tabMastered" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-700 text-emerald-400 hover:bg-slate-600">Đã Nhớ (<span id="countMastered">0</span>)</button>
+                    <button onclick="filterHistory('review')" id="tabReview" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-700 text-amber-400 hover:bg-slate-600">Cần Ôn Lại (<span id="countReview">0</span>)</button>
+                </div>
+
+                <div id="historyListContainer" class="space-y-3">
+                    <!-- Dynamic items rendered via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-slate-400 text-sm font-semibold">
+        <div class="max-w-5xl mx-auto px-4">
+            Ms. Hạnh X Gemini | Good luck for your exam! 🍀🍀
+        </div>
+    </footer>
+
+    <!-- App Script -->
+    <script>
+        /* -------------------------------------------------------------
+           QUESTION DATABASE (LEVEL A1 ONLY)
+        ------------------------------------------------------------- */
+        const QUESTION_BANK = {
+            1: {
+                title: "Lesson 1: Personal Information",
+                questions: [
+                    { id: "1-1", q: "What is your full name?", answer: "My full name is Nguyen Van Nam." },
+                    { id: "1-2", q: "How do you spell your first name?", answer: "It is N-A-M." },
+                    { id: "1-3", q: "How old are you?", answer: "I am twenty-five years old." },
+                    { id: "1-4", q: "Where is your hometown?", answer: "My hometown is Da Nang City." },
+                    { id: "1-5", q: "Where are you from?", answer: "I am from Vietnam." },
+                    { id: "1-6", q: "How is your hometown?", answer: "My hometown is small and peaceful." },
+                    { id: "1-7", q: "Are you a student?", answer: "Yes, I am a student." },
+                    { id: "1-8", q: "Are you married or single?", answer: "I am single." },
+                    { id: "1-9", q: "What is your nationality?", answer: "I am Vietnamese." },
+                    { id: "1-10", q: "What is your house address?", answer: "My house address is 12 Main Street." },
+                    { id: "1-11", q: "What is the name of your school?", answer: "The name of my school is Le Loi School." },
+                    { id: "1-12", q: "Where is your school?", answer: "My school is in Ho Chi Minh City." }
+                ]
+            },
+            2: {
+                title: "Lesson 2: School & House & Rooms",
+                questions: [
+                    { id: "2-1", q: "Do you have a school bag?", answer: "Yes, I have a black school bag." },
+                    { id: "2-2", q: "How is your school bag?", answer: "My school bag is new and big." },
+                    { id: "2-3", q: "What color is your school bag?", answer: "It is blue and black." },
+                    { id: "2-4", q: "How much is your school bag?", answer: "It is 200,000 VND." },
+                    { id: "2-5", q: "What is in your bag?", answer: "There are books, pens, and a notebook in my bag." },
+                    { id: "2-6", q: "What shape is your wallet?", answer: "My wallet is rectangular." },
+                    { id: "2-7", q: "Where is your house?", answer: "My house is in District 1." },
+                    { id: "2-8", q: "How many rooms are there in your house? What are they?", answer: "There are four rooms: a living room, a kitchen, a bedroom, and a bathroom." },
+                    { id: "2-9", q: "What is your favorite room?", answer: "My favorite room is my bedroom." },
+                    { id: "2-10", q: "How is your bedroom?", answer: "My bedroom is small but cozy." },
+                    { id: "2-11", q: "Where is your bedroom?", answer: "My bedroom is on the second floor." },
+                    { id: "2-12", q: "What is in your bedroom?", answer: "There is a bed, a desk, and a wardrobe." },
+                    { id: "2-13", q: "Where is the bed?", answer: "The bed is next to the window." },
+                    { id: "2-14", q: "How many windows are there in your bedroom?", answer: "There is one window in my bedroom." },
+                    { id: "2-15", q: "How many doors are there in your house?", answer: "There are five doors in my house." },
+                    { id: "2-16", q: "What color are the windows?", answer: "The windows are white." },
+                    { id: "2-17", q: "What shape are the windows?", answer: "The windows are square." },
+                    { id: "2-18", q: "What shape is the door in your house?", answer: "The door is rectangular." },
+                    { id: "2-19", q: "Do you have a garden?", answer: "Yes, I have a small garden." },
+                    { id: "2-20", q: "Is your garden big or small?", answer: "It is small but lovely." }
+                ]
+            },
+            3: {
+                title: "Lesson 3: Family & Vehicle",
+                questions: [
+                    { id: "3-1", q: "Do you live alone or with your family?", answer: "I live with my family." },
+                    { id: "3-2", q: "How many people are there in your family? Who are they?", answer: "There are four people: my father, my mother, my sister, and me." },
+                    { id: "3-3", q: "How many generations are there in your family?", answer: "There are two generations in my family." },
+                    { id: "3-4", q: "Is your family a nuclear or an extended family?", answer: "My family is a nuclear family." },
+                    { id: "3-5", q: "What is your mother’s name?", answer: "My mother's name is Lan." },
+                    { id: "3-6", q: "How old is your mother?", answer: "She is fifty years old." },
+                    { id: "3-7", q: "What is your mother’s job?", answer: "She is a teacher." },
+                    { id: "3-8", q: "What does your father do?", answer: "My father is a doctor." },
+                    { id: "3-9", q: "Where does your mother work?", answer: "She works at a primary school." },
+                    { id: "3-10", q: "Does your mother like her job?", answer: "Yes, she loves her job very much." },
+                    { id: "3-11", q: "What do you do?", answer: "I am an office worker." },
+                    { id: "3-12", q: "Do you have any cousins?", answer: "Yes, I have two cousins." },
+                    { id: "3-13", q: "How many cousins do you have?", answer: "I have two cousins." },
+                    { id: "3-14", q: "What do you usually do with your family on the weekend?", answer: "We usually cook dinner and watch TV together." },
+                    { id: "3-15", q: "Do you love your family?", answer: "Yes, I love my family very much." },
+                    { id: "3-16", q: "Do you have a bike or a motorbike?", answer: "I have a motorbike." },
+                    { id: "3-17", q: "Is your motorbike expensive or cheap?", answer: "It is cheap." },
+                    { id: "3-18", q: "Where is your motorbike?", answer: "It is in the garage." },
+                    { id: "3-19", q: "How much is your motorbike?", answer: "It is 30 million VND." }
+                ]
+            },
+            4: {
+                title: "Lesson 4: Daily Routine & Jobs",
+                questions: [
+                    { id: "4-1", q: "How many meals do you have every day? What are they?", answer: "I have three meals every day: breakfast, lunch, and dinner." },
+                    { id: "4-2", q: "What do you have for breakfast?", answer: "I have bread and milk for breakfast." },
+                    { id: "4-3", q: "What food do you have for lunch?", answer: "I have rice, fish, and soup for lunch." },
+                    { id: "4-4", q: "What do you do after lunch?", answer: "I take a short nap after lunch." },
+                    { id: "4-5", q: "What time do you have breakfast?", answer: "I have breakfast at 7:00 AM." },
+                    { id: "4-6", q: "How long do you have breakfast?", answer: "I have breakfast for twenty minutes." },
+                    { id: "4-7", q: "Do you often have coffee or milk for breakfast?", answer: "I often drink coffee for breakfast." },
+                    { id: "4-8", q: "Where do you have breakfast?", answer: "I have breakfast at home." },
+                    { id: "4-9", q: "Who do you have breakfast with?", answer: "I have breakfast with my family." },
+                    { id: "4-10", q: "Who cooks breakfast in your family?", answer: "My mother cooks breakfast." },
+                    { id: "4-11", q: "What is your favorite food?", answer: "My favorite food is chicken rice." },
+                    { id: "4-12", q: "Why do you like rice and meat?", answer: "Because they are delicious and healthy." },
+                    { id: "4-13", q: "How often do you eat rice?", answer: "I eat rice every day." },
+                    { id: "4-14", q: "What is your favorite drink?", answer: "My favorite drink is orange juice." },
+                    { id: "4-15", q: "How often do you drink that drink?", answer: "I drink it three times a week." },
+                    { id: "4-16", q: "What do you like eating for breakfast?", answer: "I like eating noodles for breakfast." },
+                    { id: "4-17", q: "Do you like Vietnamese food or Thai food?", answer: "I like Vietnamese food." },
+                    { id: "4-18", q: "Does your family have dinner together?", answer: "Yes, my family has dinner together every evening." },
+                    { id: "4-19", q: "What does your family do at dinner?", answer: "We eat food and talk together." },
+                    { id: "4-20", q: "How often do you do homework at home?", answer: "I do homework every evening." },
+                    { id: "4-21", q: "Do you have dinner at home or eat out?", answer: "I usually have dinner at home." },
+                    { id: "4-22", q: "What do you do?", answer: "I am a student." },
+                    { id: "4-23", q: "Where do you study?", answer: "I study at university." },
+                    { id: "4-24", q: "How do you go to school?", answer: "I go to school by motorbike." },
+                    { id: "4-25", q: "How long does it take you to go to school?", answer: "It takes fifteen minutes." },
+                    { id: "4-26", q: "Do you like your study?", answer: "Yes, I like my study very much." },
+                    { id: "4-27", q: "Do you work part-time?", answer: "No, I do not work part-time." },
+                    { id: "4-28", q: "What is your part-time job?", answer: "I am a tutor." },
+                    { id: "4-29", q: "Where do you work?", answer: "I work in an office." },
+                    { id: "4-30", q: "What is your father’s job?", answer: "My father is an engineer." },
+                    { id: "4-31", q: "Where does your father work?", answer: "He works in a factory." },
+                    { id: "4-32", q: "What time does your father go to work?", answer: "He goes to work at 7:30 AM." },
+                    { id: "4-33", q: "Does your father like his job?", answer: "Yes, he likes his job." },
+                    { id: "4-34", q: "Does your father work on the day shift or the night shift?", answer: "He works on the day shift." },
+                    { id: "4-35", q: "Is his job boring or interesting?", answer: "His job is interesting." },
+                    { id: "4-36", q: "Are you in a hurry in the morning?", answer: "No, I am not in a hurry." },
+                    { id: "4-37", q: "Who gets up early in your family?", answer: "My mother gets up early in my family." },
+                    { id: "4-38", q: "What time do you get up?", answer: "I get up at 6:00 AM." },
+                    { id: "4-39", q: "What do you do after you get up?", answer: "I wash my face and brush my teeth." },
+                    { id: "4-40", q: "How often do you do morning exercise?", answer: "I do morning exercise every day." },
+                    { id: "4-41", q: "When do you go to school?", answer: "I go to school at 7:00 AM." },
+                    { id: "4-42", q: "Is your house near or far from your school?", answer: "My house is near my school." },
+                    { id: "4-43", q: "How many days a week do you go to school?", answer: "I go to school five days a week." },
+                    { id: "4-44", q: "What time does your first class start?", answer: "My first class starts at 7:30 AM." },
+                    { id: "4-45", q: "What time does your class finish?", answer: "My class finishes at 11:30 AM." },
+                    { id: "4-46", q: "How long do you study at school?", answer: "I study for four hours every day." },
+                    { id: "4-47", q: "What do you do after you finish class? Do you come home?", answer: "I finish class and come home immediately." },
+                    { id: "4-48", q: "Do you go to school on Saturday?", answer: "No, I do not go to school on Saturday." },
+                    { id: "4-49", q: "What do you do on the weekend?", answer: "I clean my house and rest on the weekend." },
+                    { id: "4-50", q: "Do you go to bed late or early at night?", answer: "I go to bed early at night." },
+                    { id: "4-51", q: "What time do you go to bed?", answer: "I go to bed at 10:30 PM." },
+                    { id: "4-52", q: "What do you like doing in your free time?", answer: "I like listening to music in my free time." },
+                    { id: "4-53", q: "How often do you watch TV?", answer: "I watch TV every evening." },
+                    { id: "4-54", q: "How long do you play games?", answer: "I play games for thirty minutes." }
+                ]
+            },
+            5: {
+                title: "Lesson 5: Seasons & Clothes",
+                questions: [
+                    { id: "5-1", q: "When is your birthday?", answer: "My birthday is on June 15th." },
+                    { id: "5-2", q: "What is your date of birth?", answer: "My date of birth is June 15th, 1998." },
+                    { id: "5-3", q: "What do you do on your birthday?", answer: "I have a small party with my family." },
+                    { id: "5-4", q: "Do you get any gifts on your birthday?", answer: "Yes, I get many nice gifts." },
+                    { id: "5-5", q: "When is your father’s birthday?", answer: "His birthday is on November 10th." },
+                    { id: "5-6", q: "Do you give any gifts to him on his birthday?", answer: "Yes, I buy him a new shirt." },
+                    { id: "5-7", q: "When is New Year’s Eve?", answer: "It is on December 31st." },
+                    { id: "5-8", q: "What do you usually do on New Year’s Eve?", answer: "I watch fireworks with my friends." },
+                    { id: "5-9", q: "What is your favorite holiday?", answer: "My favorite holiday is Tet holiday." },
+                    { id: "5-10", q: "Who do you spend time with on that holiday?", answer: "I spend time with my parents and relatives." },
+                    { id: "5-11", q: "Where is your hometown?", answer: "My hometown is in Can Tho City." },
+                    { id: "5-12", q: "How many seasons are there in your hometown? What are they?", answer: "There are two seasons: the dry season and the rainy season." },
+                    { id: "5-13", q: "When is spring?", answer: "Spring is from January to March." },
+                    { id: "5-14", q: "When is winter?", answer: "Winter is from October to December." },
+                    { id: "5-15", q: "When is the dry season?", answer: "The dry season is from November to April." },
+                    { id: "5-16", q: "When is the rainy season?", answer: "The rainy season is from May to October." },
+                    { id: "5-17", q: "What is the weather like in spring?", answer: "It is warm and dry." },
+                    { id: "5-18", q: "What is the weather like in the dry season?", answer: "It is hot and sunny." },
+                    { id: "5-19", q: "What is the weather like in the rainy season?", answer: "It is rainy and wet." },
+                    { id: "5-20", q: "What is your favorite season?", answer: "My favorite season is autumn." },
+                    { id: "5-21", q: "What do you like doing in summer?", answer: "I like swimming in summer." },
+                    { id: "5-22", q: "What do you like eating in summer?", answer: "I like eating ice cream in summer." },
+                    { id: "5-23", q: "What do you wear in summer?", answer: "I wear a T-shirt and shorts." },
+                    { id: "5-24", q: "Do you like wearing jeans or pants in winter?", answer: "I like wearing jeans in winter." },
+                    { id: "5-25", q: "What do you often wear in hot weather?", answer: "I often wear light T-shirts." },
+                    { id: "5-26", q: "What do you often wear on rainy days?", answer: "I wear a raincoat." },
+                    { id: "5-27", q: "Do you like wearing a T-shirt or a shirt when you go out?", answer: "I like wearing a shirt when I go out." },
+                    { id: "5-28", q: "What do you usually wear at a party?", answer: "I usually wear a nice dress or shirt." },
+                    { id: "5-29", q: "What do you usually wear at home?", answer: "I wear casual clothes at home." },
+                    { id: "5-30", q: "What do you usually wear at school?", answer: "I wear my school uniform." },
+                    { id: "5-31", q: "What color is your uniform?", answer: "It is white and blue." },
+                    { id: "5-32", q: "What size is your uniform?", answer: "It is size M." },
+                    { id: "5-33", q: "How much is your uniform?", answer: "It is 250,000 VND." },
+                    { id: "5-34", q: "Do you go to school when it rains heavily or when it’s too hot?", answer: "Yes, I still go to school." },
+                    { id: "5-35", q: "How many days a week do you wear your uniform?", answer: "I wear it five days a week." },
+                    { id: "5-36", q: "What are you wearing right now?", answer: "I am wearing a white T-shirt and blue jeans now." },
+                    { id: "5-37", q: "Are you wearing a T-shirt or a shirt today?", answer: "I am wearing a T-shirt today." },
+                    { id: "5-38", q: "How is the traffic in your hometown?", answer: "The traffic is quiet and safe." },
+                    { id: "5-39", q: "How often does it rain in your hometown?", answer: "It rains very often in the afternoon." },
+                    { id: "5-40", q: "Do you prefer your hometown or Ho Chi Minh City?", answer: "I prefer my hometown because it is quiet." }
+                ]
+            }
+        };
+
+        /* -------------------------------------------------------------
+           APP STATE MANAGEMENT
+        ------------------------------------------------------------- */
+        let currentLesson = 1;
+        let activeQueue = [];
+        let currentIndex = 0;
+        let currentSpeed = 1.0;
+        let isSpeaking = false;
+        let historyData = {
+            mastered: [], // items marked as mastered
+            review: []    // items marked review later
+        };
+
+        // Initialize App
+        window.onload = function() {
+            loadLesson(1);
+        };
+
+        /* -------------------------------------------------------------
+           LESSON & QUEUE MANAGEMENT
+        ------------------------------------------------------------- */
+        function loadLesson(lessonKey) {
+            currentLesson = lessonKey;
+            activeQueue = [];
+
+            if (lessonKey === 'random') {
+                document.getElementById('currentLessonTitle').innerText = "🔀 Random Mode (Tất cả Lessons)";
+                // Gather all questions from all lessons
+                let allQ = [];
+                for (let l in QUESTION_BANK) {
+                    allQ = allQ.concat(QUESTION_BANK[l].questions);
+                }
+                // Shuffle array
+                activeQueue = [...allQ].sort(() => Math.random() - 0.5);
+            } else {
+                let lNum = parseInt(lessonKey);
+                document.getElementById('currentLessonTitle').innerText = QUESTION_BANK[lNum].title;
+                activeQueue = [...QUESTION_BANK[lNum].questions];
+            }
+
+            currentIndex = 0;
+            renderCurrentQuestion();
+        }
+
+        function changeLesson(val) {
+            loadLesson(val);
+        }
+
+        function renderCurrentQuestion() {
+            if (activeQueue.length === 0) {
+                alert("Chúc mừng! Bạn đã hoàn thành tất cả câu hỏi trong bài này!");
+                return;
+            }
+
+            if (currentIndex >= activeQueue.length) {
+                currentIndex = 0; // Loop back
+            }
+
+            const currentQ = activeQueue[currentIndex];
+
+            // Render numbers
+            document.getElementById('currentNumberDisplay').innerText = (currentIndex + 1);
+            document.getElementById('totalQuestionsDisplay').innerText = activeQueue.length;
+
+            // Reset UI components
+            hideHint();
+            resetFeedbackBox();
+            document.getElementById('userAnswerInput').value = '';
+
+            // Auto Speak question when loaded
+            speakCurrentQuestion();
+        }
+
+        /* -------------------------------------------------------------
+           SPACED REPETITION LOGIC (ÔN LẠI SAU / ĐÃ NHỚ)
+        ------------------------------------------------------------- */
+        function markReviewLater() {
+            if (activeQueue.length === 0) return;
+            const item = activeQueue[currentIndex];
+
+            // Add to history tracking
+            if (!historyData.review.find(i => i.id === item.id)) {
+                historyData.review.push(item);
+            }
+
+            // Insert current item 2-3 steps ahead in current queue
+            const insertIdx = Math.min(currentIndex + 3, activeQueue.length);
+            activeQueue.splice(insertIdx, 0, item);
+            
+            // Advance index
+            currentIndex++;
+            updateHistoryUI();
+            renderCurrentQuestion();
+        }
+
+        function markMastered() {
+            if (activeQueue.length === 0) return;
+            const item = activeQueue[currentIndex];
+
+            // Add to history tracking
+            if (!historyData.mastered.find(i => i.id === item.id)) {
+                historyData.mastered.push(item);
+            }
+            // Remove from review list if previously added
+            historyData.review = historyData.review.filter(i => i.id !== item.id);
+
+            // Remove from active queue so it won't repeat
+            activeQueue.splice(currentIndex, 1);
+
+            updateHistoryUI();
+            renderCurrentQuestion();
+        }
+
+        /* -------------------------------------------------------------
+           HINT (GỢI Ý) SYSTEM
+        ------------------------------------------------------------- */
+        function toggleHint() {
+            const hintBox = document.getElementById('hintBox');
+            const currentQ = activeQueue[currentIndex];
+
+            if (hintBox.classList.contains('hidden')) {
+                document.getElementById('questionTextDisplay').innerText = currentQ.q;
+                document.getElementById('sampleAnswerDisplay').innerText = currentQ.answer;
+                hintBox.classList.remove('hidden');
+                document.getElementById('hintBtnText').innerText = "Ẩn Gợi Ý";
+            } else {
+                hideHint();
+            }
+        }
+
+        function hideHint() {
+            document.getElementById('hintBox').classList.add('hidden');
+            document.getElementById('hintBtnText').innerText = "Nút Gợi Ý (Xem câu hỏi & Đáp án mẫu)";
+        }
+
+        /* -------------------------------------------------------------
+           AUDIO TTS SYSTEM (American English Male Voice)
+        ------------------------------------------------------------- */
+        function setSpeed(rate) {
+            currentSpeed = rate;
+            // Highlight speed button
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('bg-sky-500', 'text-white');
+                btn.classList.add('text-slate-400');
+            });
+
+            if (rate === 1.0) document.getElementById('speed10').className = "speed-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-500 text-white";
+            if (rate === 0.75) document.getElementById('speed075').className = "speed-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-500 text-white";
+            if (rate === 0.5) document.getElementById('speed05').className = "speed-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-500 text-white";
+            if (rate === 0.25) document.getElementById('speed025').className = "speed-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-500 text-white";
+
+            // If audio is playing, replay at new rate
+            speakCurrentQuestion();
+        }
+
+        async function speakCurrentQuestion() {
+            if (activeQueue.length === 0) return;
+            const textToSpeak = activeQueue[currentIndex].q;
+            const playIcon = document.getElementById('playIcon');
+
+            // iOS Safari: start speech synchronously from the tap handler.
+            // Waiting for a network request first can lose the user-gesture
+            // permission required by iPhone Safari to play audio.
+            const isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+            if (isAppleMobile) {
+                playIcon.className = "fa-solid fa-volume-high";
+                playWebSpeechTTS(textToSpeak, currentSpeed);
+                return;
+            }
+
+            playIcon.className = "fa-solid fa-spinner fa-spin";
+            try {
+                // Keep Gemini TTS as the preferred voice on desktop.
+                const success = await playGeminiTTS(textToSpeak, currentSpeed);
+                if (!success) playWebSpeechTTS(textToSpeak, currentSpeed);
+            } catch (err) {
+                playWebSpeechTTS(textToSpeak, currentSpeed);
+            } finally {
+                playIcon.className = "fa-solid fa-volume-high";
+            }
+        }
+
+        // Gemini API TTS Call Implementation
+        async function playGeminiTTS(text, speed) {
+            const apiKey = ""; // Built-in runtime key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [{ text: `Speak in a clear, natural American male voice: ${text}` }]
+                }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: "Puck" } // Natural Male Voice: Puck / Orus / Charon
+                        }
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) return false;
+
+                const result = await response.json();
+                const candidatePart = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = candidatePart?.inlineData?.data;
+                const mimeType = candidatePart?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+
+                    const rawBytes = atob(audioData);
+                    const pcm16 = new Int16Array(rawBytes.length / 2);
+                    for (let i = 0; i < pcm16.length; i++) {
+                        pcm16[i] = rawBytes.charCodeAt(i * 2) | (rawBytes.charCodeAt(i * 2 + 1) << 8);
+                    }
+
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.playbackRate = speed;
+                    await audio.play();
+                    return true;
+                }
+            } catch (e) {
+                console.warn("Gemini TTS fallback triggered", e);
+            }
+            return false;
+        }
+
+        // Web Speech API Fallback
+        function playWebSpeechTTS(text, speed) {
+            if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+                console.warn('Trình duyệt này không hỗ trợ Web Speech API.');
+                return;
+            }
+
+            const synth = window.speechSynthesis;
+            synth.cancel(); // Stop active speech before starting the new question.
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = speed;
+            utterance.lang = 'en-US';
+
+            // On iPhone, getVoices() can initially return an empty list.
+            // Speech can still run with the system's default English voice.
+            const voices = synth.getVoices();
+            const preferredVoice =
+                voices.find(v => v.lang.toLowerCase() === 'en-us' &&
+                    /male|david|mark|george/i.test(v.name)) ||
+                voices.find(v => v.lang.toLowerCase() === 'en-us');
+
+            if (preferredVoice) utterance.voice = preferredVoice;
+
+            utterance.onstart = () => {
+                const icon = document.getElementById('playIcon');
+                if (icon) icon.className = "fa-solid fa-volume-high";
+            };
+            utterance.onerror = (event) => {
+                console.warn('Web Speech playback error:', event.error);
+                const icon = document.getElementById('playIcon');
+                if (icon) icon.className = "fa-solid fa-volume-high";
+            };
+
+            // resume() helps recover if iOS Safari has left speech synthesis paused.
+            synth.resume();
+            synth.speak(utterance);
+        }
+
+        // Convert PCM Int16 Array to WAV Blob
+        function pcmToWav(pcm16, sampleRate) {
+            const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+            const view = new DataView(buffer);
+
+            function writeString(offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            }
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + pcm16.length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // Raw PCM
+            view.setUint16(22, 1, true); // Mono channel
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, pcm16.length * 2, true);
+
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(44 + i * 2, pcm16[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        /* -------------------------------------------------------------
+           AI EVALUATION SYSTEM (GEMINI 3 FLASH)
+        ------------------------------------------------------------- */
+        async function submitAnswer() {
+            const userAns = document.getElementById('userAnswerInput').value.trim();
+            if (!userAns) {
+                alert("Vui lòng nhập câu trả lời trước khi nộp!");
+                return;
+            }
+
+            const currentQ = activeQueue[currentIndex];
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Checking...</span>`;
+
+            const feedbackBox = document.getElementById('feedbackResultBox');
+            feedbackBox.className = "rounded-xl p-4 border border-sky-500/40 bg-slate-900/90 text-slate-300 block";
+            document.getElementById('feedbackHeader').innerHTML = `<span class="text-sky-400 font-bold"><i class="fa-solid fa-robot mr-2"></i>AI đang chấm điểm câu trả lời...</span>`;
+            document.getElementById('feedbackBody').innerHTML = `<p class="text-xs text-slate-400">Đang kiểm tra ngữ pháp Level A1 và tính chính xác...</p>`;
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `You are a friendly English teacher checking an adult student's A1-level answer.
+Question asked: "${currentQ.q}"
+Target Sample Answer: "${currentQ.answer}"
+
+Rule Guidelines:
+1. Student language MUST ONLY use basic Level A1 vocabulary and standard grammar (Present Simple, or Present Continuous if keywords like 'now', 'today' are present).
+2. If the user's answer has grammar or prepositions wrong (e.g. "My birthday is January" instead of "My birthday is on June 3rd"), mark it as incorrect.
+3. Respond ONLY in valid JSON format:
+{
+  "isCorrect": boolean,
+  "headline": string,
+  "errorDetails": string,
+  "suggestedCorrection": string,
+  "explanationVN": string
+}
+
+Guidelines for fields:
+- "isCorrect": true if grammatically valid and answers the question at A1 level, false otherwise.
+- "headline": If correct: "Chính xác! 🎉" (green text). If incorrect: "Câu trả lời chưa chính xác" (red text).
+- "errorDetails": In Vietnamese, clearly point out what specific part is wrong or missing.
+- "suggestedCorrection": Provide the exact corrected sentence using simple A1 level English.
+- "explanationVN": Explain WHY it is wrong in simple, encouraging Vietnamese.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: `Student answer: "${userAns}"` }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json"
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                const jsonText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (jsonText) {
+                    const result = JSON.parse(jsonText);
+                    renderAIFeedback(result, userAns);
+                } else {
+                    renderAIFeedbackFallback(userAns, currentQ);
+                }
+            } catch (err) {
+                console.error(err);
+                renderAIFeedbackFallback(userAns, currentQ);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Submit</span> <i class="fa-solid fa-paper-plane"></i>`;
+            }
+        }
+
+        function renderAIFeedback(res, userAns) {
+            const feedbackBox = document.getElementById('feedbackResultBox');
+            const header = document.getElementById('feedbackHeader');
+            const body = document.getElementById('feedbackBody');
+
+            if (res.isCorrect) {
+                feedbackBox.className = "rounded-xl p-4 border border-emerald-500/50 bg-emerald-950/40 text-slate-200 block";
+                header.innerHTML = `<span class="text-emerald-400 font-bold text-lg"><i class="fa-solid fa-circle-check mr-2"></i>${res.headline || 'Chính xác! 🎉'}</span>`;
+                body.innerHTML = `
+                    <p class="text-sm font-semibold text-emerald-300">Câu trả lời: "${userAns}"</p>
+                    <p class="text-xs text-slate-300 mt-1">${res.explanationVN || 'Bạn đã sử dụng đúng từ vựng và ngữ pháp Level A1.'}</p>
+                `;
+            } else {
+                feedbackBox.className = "rounded-xl p-4 border border-rose-500/60 bg-rose-950/40 text-slate-200 block";
+                header.innerHTML = `<span class="text-rose-400 font-bold text-lg"><i class="fa-solid fa-triangle-exclamation mr-2"></i>${res.headline || 'Câu trả lời chưa chính xác'}</span>`;
+                body.innerHTML = `
+                    <div class="space-y-1.5 mt-1 text-sm">
+                        <p class="text-rose-300 font-medium"><strong class="text-white">Lỗi phát hiện:</strong> ${res.errorDetails || 'Ngữ pháp hoặc từ vựng chưa đúng cấu trúc A1.'}</p>
+                        <p class="text-emerald-300 font-semibold"><strong class="text-white">Gợi ý sửa lại đúng:</strong> "${res.suggestedCorrection || activeQueue[currentIndex].answer}"</p>
+                        <p class="text-xs text-slate-300 pt-1 border-t border-rose-900/50"><strong class="text-slate-200">Giải thích chi tiết:</strong> ${res.explanationVN || 'Hãy chú ý thì Hiện tại đơn và các giới từ cơ bản.'}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderAIFeedbackFallback(userAns, currentQ) {
+            const feedbackBox = document.getElementById('feedbackResultBox');
+            feedbackBox.className = "rounded-xl p-4 border border-amber-500/50 bg-amber-950/40 text-slate-200 block";
+            document.getElementById('feedbackHeader').innerHTML = `<span class="text-amber-400 font-bold"><i class="fa-solid fa-circle-info mr-2"></i>Đã ghi nhận câu trả lời!</span>`;
+            document.getElementById('feedbackBody').innerHTML = `
+                <p class="text-sm font-medium text-slate-200">Câu trả lời của bạn: "${userAns}"</p>
+                <p class="text-xs text-emerald-300 mt-1 font-semibold">Đáp án mẫu chuẩn A1: "${currentQ.answer}"</p>
+            `;
+        }
+
+        function resetFeedbackBox() {
+            const feedbackBox = document.getElementById('feedbackResultBox');
+            feedbackBox.classList.add('hidden');
+        }
+
+        /* -------------------------------------------------------------
+           HISTORY MODAL UI & FILTERS
+        ------------------------------------------------------------- */
+        function toggleHistoryModal() {
+            const modal = document.getElementById('historyModal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                filterHistory('all');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function updateHistoryUI() {
+            const masteredCount = historyData.mastered.length;
+            const reviewCount = historyData.review.length;
+            const total = masteredCount + reviewCount;
+
+            document.getElementById('historyBadge').innerText = total;
+            document.getElementById('countAll').innerText = total;
+            document.getElementById('countMastered').innerText = masteredCount;
+            document.getElementById('countReview').innerText = reviewCount;
+        }
+
+        function filterHistory(type) {
+            const container = document.getElementById('historyListContainer');
+            container.innerHTML = '';
+
+            // Update tab styles
+            document.getElementById('tabAll').className = type === 'all' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-sky-500 text-white" : "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-700 text-slate-300";
+            document.getElementById('tabMastered').className = type === 'mastered' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 text-white" : "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-700 text-emerald-400";
+            document.getElementById('tabReview').className = type === 'review' ? "px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-500 text-white" : "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-700 text-amber-400";
+
+            let itemsToDisplay = [];
+            if (type === 'mastered') itemsToDisplay = historyData.mastered.map(i => ({...i, status: 'mastered'}));
+            else if (type === 'review') itemsToDisplay = historyData.review.map(i => ({...i, status: 'review'}));
+            else {
+                itemsToDisplay = [
+                    ...historyData.mastered.map(i => ({...i, status: 'mastered'})),
+                    ...historyData.review.map(i => ({...i, status: 'review'}))
+                ];
+            }
+
+            if (itemsToDisplay.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">Chưa có dữ liệu học tập trong mục này.</div>`;
+                return;
+            }
+
+            itemsToDisplay.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "bg-slate-900 border border-slate-700 rounded-xl p-3.5 flex items-start justify-between gap-3";
+                
+                const isMastered = item.status === 'mastered';
+                const statusBadge = isMastered 
+                    ? `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs px-2 py-0.5 rounded-md font-bold">Đã Nhớ</span>`
+                    : `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs px-2 py-0.5 rounded-md font-bold">Ôn Lại Sau</span>`;
+
+                itemDiv.innerHTML = `
+                    <div class="space-y-1">
+                        <p class="text-sm font-semibold text-white">${item.q}</p>
+                        <p class="text-xs text-emerald-400 font-medium">${item.answer}</p>
+                    </div>
+                    <div>${statusBadge}</div>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+    </script>
+</body>
+</html>
